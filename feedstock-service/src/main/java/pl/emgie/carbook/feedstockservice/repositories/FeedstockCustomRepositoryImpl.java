@@ -41,7 +41,7 @@ public class FeedstockCustomRepositoryImpl implements FeedstockCustomRepository 
     }
 
     @Override
-    public Collection<FeedstockEntity> findFeedstockByDateForAllTypes(LocalDateTime date) {
+    public List<FeedstockEntity> findFeedstockByDateForAllTypes(LocalDateTime date) {
         return null;
     }
 
@@ -51,7 +51,7 @@ public class FeedstockCustomRepositoryImpl implements FeedstockCustomRepository 
     }
 
     @Override
-    public List<FeedstockEntity> findNewestFeedstock() {
+    public List<FeedstockEntity> findNewestFeedstocksEntity() {
         return null;
     }
 
