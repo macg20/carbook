@@ -11,11 +11,11 @@ public interface FeedstockCustomRepository {
 
     FeedstockEntity findFeedstockByDateAndType(FeedstockType type, LocalDateTime date);
 
-    Collection<FeedstockEntity> findFeedstockByDateForAllTypes(LocalDateTime date);
+    List<FeedstockEntity> findFeedstockByDateForAllTypes(LocalDateTime date);
 
     FeedstockEntity findNewestFeedstockByType(FeedstockType type);
 
-    List<FeedstockEntity> findNewestFeedstock();
+    List<FeedstockEntity> findNewestFeedstocksEntity();
 
 
 }
