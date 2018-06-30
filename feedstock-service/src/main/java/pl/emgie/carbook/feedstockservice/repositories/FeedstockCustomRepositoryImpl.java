@@ -1,22 +1,19 @@
 package pl.emgie.carbook.feedstockservice.repositories;
 
+import org.springframework.stereotype.Repository;
 import pl.emgie.carbook.feedstockservice.domain.FeedstockEntity;
 import pl.emgie.carbook.feedstockservice.domain.FeedstockEntity_;
 import pl.emgie.carbook.feedstockservice.utils.FeedstockType;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
+@Repository
 public class FeedstockCustomRepositoryImpl implements FeedstockCustomRepository {
 
     @PersistenceContext
@@ -52,7 +49,19 @@ public class FeedstockCustomRepositoryImpl implements FeedstockCustomRepository 
 
     @Override
     public List<FeedstockEntity> findNewestFeedstocksEntity() {
-        return null;
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(FeedstockEntity.class);
+
+        Root<FeedstockEntity> root = criteriaQuery.from(FeedstockEntity.class);
+
+        Subquery subquery = criteriaQuery.subquery(FeedstockEntity.class);
+        Root<FeedstockEntity> subRoot = subquery.from(FeedstockEntity.class);
+        subquery.select(criteriaBuilder.greatest(subRoot.get((FeedstockEntity_.createDate))));
+        subquery.groupBy(subRoot.get(FeedstockEntity_.type));
+
+        criteriaQuery.where(root.get(FeedstockEntity_.createDate).in(subquery));
+
+        return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
 
