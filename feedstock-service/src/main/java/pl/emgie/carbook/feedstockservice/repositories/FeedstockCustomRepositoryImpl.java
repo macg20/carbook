@@ -17,7 +17,7 @@ import java.util.List;
 public class FeedstockCustomRepositoryImpl implements FeedstockCustomRepository {
 
     @PersistenceContext
-    EntityManager entityManager;
+    private EntityManager entityManager;
 
     @Override
     public FeedstockEntity findFeedstockByDateAndType(FeedstockType type, LocalDateTime createDate) {

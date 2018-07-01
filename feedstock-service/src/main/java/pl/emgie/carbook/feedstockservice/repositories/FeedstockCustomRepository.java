@@ -4,7 +4,6 @@ import pl.emgie.carbook.feedstockservice.domain.FeedstockEntity;
 import pl.emgie.carbook.feedstockservice.utils.FeedstockType;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 
 public interface FeedstockCustomRepository {

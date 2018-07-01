@@ -89,8 +89,8 @@ public class FeedstockEntity {
 
     @PrePersist
     private void prePersist() {
-        if(this.createDate == null)
-        this.createDate = LocalDateTime.now();
+        if (this.createDate == null)
+            this.createDate = LocalDateTime.now();
     }
 
     @PreUpdate
