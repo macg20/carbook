@@ -27,31 +27,26 @@ public class FeedstockRestController extends BaseService {
     @GetMapping("/prices/")
     public FeedstocksPricesAndDateDto getNewestFeedstocksPrices() {
         getLogger().error("getNewestFeedstocksPrices");
-//        FeedstocksPricesAndDateDto dto = feedstockService.findNewestData();
-        return new FeedstocksPricesAndDateDto();
+        FeedstocksPricesAndDateDto dto = feedstockService.findNewestData();
+        return dto;
     }
 
     @GetMapping("/prices/type/{type}/date/{date}")
     public FeedstockDto getDataByTypeAndDate(@PathVariable("type") String type, @PathVariable("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         getLogger().error("getDataByTypeAndDate");
 //        FeedstocksPricesAndDateDto dto = feedstockService.findNewestData();
-        //findFeedstockByDateAndType
         return new FeedstockDto();
     }
 
     @GetMapping("/prices/type/{type}")
     public FeedstockDto getNewestFeedstockPriceByType(@PathVariable("type") String type) {
         getLogger().error("getNewestFeedstockPrice");
-//findNewestFeedstockByType
-//        FeedstocksPricesAndDateDto dto = feedstockService.findNewestData();
         return new FeedstockDto();
     }
 
     @GetMapping("/prices/date/{date}")
     public FeedstocksPricesAndDateDto getNewestFeedstockPriceByDate(@PathVariable("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         getLogger().error("getNewestFeedstockPriceByDate");
-//        FeedstocksPricesAndDateDto dto = feedstockService.findNewestData();
-        //findFeedstockByDateForAllTypes
         return new FeedstocksPricesAndDateDto();
     }
 }
