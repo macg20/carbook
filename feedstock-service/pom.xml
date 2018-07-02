@@ -18,9 +18,27 @@
         <java.version>1.8</java.version>
         <junit-jupiter.version>5.2.0</junit-jupiter.version>
         <junit-platform.version>1.2.0</junit-platform.version>
+        <!--<postgres.driver.version>9.4-1200-jdbc41</postgres.driver.version>-->
+        <spring-cloud.version>Finchley.RC2</spring-cloud.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
         <dependency>
             <groupId>pl.emgie</groupId>
             <artifactId>commons</artifactId>
@@ -93,5 +111,11 @@
             <artifactId>hibernate-java8</artifactId>
             <!--<version>${hibernate.version}</version>-->
         </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>org.postgresql</groupId>-->
+            <!--<artifactId>postgresql</artifactId>-->
+            <!--<version>${postgres.driver.version}</version>-->
+        <!--</dependency>-->
     </dependencies>
 </project>
