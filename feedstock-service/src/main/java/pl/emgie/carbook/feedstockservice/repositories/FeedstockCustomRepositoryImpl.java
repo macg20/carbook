@@ -39,7 +39,21 @@ public class FeedstockCustomRepositoryImpl implements FeedstockCustomRepository 
 
     @Override
     public List<FeedstockEntity> findFeedstockByDateForAllTypes(LocalDateTime date) {
-        return null;
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(FeedstockEntity.class);
+
+        Root<FeedstockEntity> root = criteriaQuery.from(FeedstockEntity.class);
+        List<Predicate> predicates = new ArrayList<>();
+
+        Predicate startDate = criteriaBuilder.greaterThanOrEqualTo(root.get(FeedstockEntity_.createDate), date.toLocalDate().atStartOfDay());
+        Predicate endDate = criteriaBuilder.lessThanOrEqualTo(root.get(FeedstockEntity_.createDate), date.toLocalDate().atTime(LocalTime.MAX));
+        predicates.add(startDate);
+        predicates.add(endDate);
+
+        criteriaQuery.select(root).where(predicates.toArray(new Predicate[]{}));
+
+
+        return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
     @Override
