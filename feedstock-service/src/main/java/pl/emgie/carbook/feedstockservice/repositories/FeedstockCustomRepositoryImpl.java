@@ -58,7 +58,20 @@ public class FeedstockCustomRepositoryImpl implements FeedstockCustomRepository 
 
     @Override
     public FeedstockEntity findNewestFeedstockByType(FeedstockType type) {
-        return null;
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(FeedstockEntity.class);
+
+        Root<FeedstockEntity> root = criteriaQuery.from(FeedstockEntity.class);
+
+        Subquery subquery = criteriaQuery.subquery(FeedstockEntity.class);
+        Root<FeedstockEntity> subRoot = subquery.from(FeedstockEntity.class);
+        subquery.select(criteriaBuilder.greatest(subRoot.get((FeedstockEntity_.createDate))));
+        subquery.where(criteriaBuilder.equal(subRoot.get(FeedstockEntity_.type),type));
+
+        criteriaQuery.where(root.get(FeedstockEntity_.createDate).in(subquery), criteriaBuilder.equal(root.get(FeedstockEntity_.type),type));
+
+
+        return (FeedstockEntity) entityManager.createQuery(criteriaQuery).setMaxResults(1).getSingleResult();
     }
 
     @Override
