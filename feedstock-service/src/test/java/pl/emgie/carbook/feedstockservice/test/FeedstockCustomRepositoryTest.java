@@ -41,12 +41,12 @@ public class FeedstockCustomRepositoryTest extends AbstractTest {
         repository.save(mockEntity);
 
         //when
-        FeedstockEntity fromDb = repository.findFeedstockByDateAndType(FeedstockType.OIL, LocalDate.now().atStartOfDay());
+        FeedstockEntity result = repository.findFeedstockByDateAndType(FeedstockType.OIL, LocalDate.now().atStartOfDay());
 
         //then
-        assertThat(fromDb).isNotNull();
-        assertThat(fromDb.getCreateDate()).isNotNull();
-        assertThat(fromDb.getUpdateDate()).isNull();
+        assertThat(result).isNotNull();
+        assertThat(result.getCreateDate()).isNotNull();
+        assertThat(result.getUpdateDate()).isNull();
 
     }
 
@@ -87,6 +87,48 @@ public class FeedstockCustomRepositoryTest extends AbstractTest {
         });
     }
 
+    @Test
+    @Transactional
+    @Rollback
+    public void findFeedstockByDateForAllTypesTest() {
+
+        //given
+        repository.saveAll(createNewestFeedstocksCollection());
+        repository.saveAll(createNewestFeedstocksDayBeforeYesterdayCollection());
+
+        //when
+        List<FeedstockEntity> yesterdayFeedstockResult = repository.findFeedstockByDateForAllTypes(getYesterdayDateTime());
+
+        //then
+        assertThat(yesterdayFeedstockResult).isNotNull();
+        assertThat(yesterdayFeedstockResult.size()).isZero();
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void findNewestFeedstockByTypeTest() {
+        //given
+        repository.saveAll(createNewestFeedstocksYesterdayCollection());
+        repository.saveAll(createNewestFeedstocksDayBeforeYesterdayCollection());
+
+        //when
+        FeedstockEntity result = repository.findNewestFeedstockByType(FeedstockType.OIL);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getCreateDate().toLocalDate()).isEqualTo(getYesterdayDate());
+
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void newestFeedstockByTypeDataNotFoundTest() {
+        //when
+        FeedstockEntity result = repository.findNewestFeedstockByType(FeedstockType.OIL);
+
+        assertThat(result).isNull();
+    }
 
     private List<FeedstockEntity> createNewestFeedstocksCollection() {
         return Arrays
@@ -154,5 +196,13 @@ public class FeedstockCustomRepositoryTest extends AbstractTest {
                 .type(type)
                 .price(price)
                 .build();
+    }
+
+    private LocalDateTime getYesterdayDateTime() {
+        return LocalDate.now().minus(1, ChronoUnit.DAYS).atStartOfDay();
+    }
+
+    private LocalDate getYesterdayDate() {
+        return LocalDate.now().minus(1, ChronoUnit.DAYS);
     }
 }
