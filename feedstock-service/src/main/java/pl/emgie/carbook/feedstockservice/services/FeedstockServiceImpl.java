@@ -2,13 +2,17 @@ package pl.emgie.carbook.feedstockservice.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.emgie.carbook.feedstockservice.domain.FeedstockEntity;
 import pl.emgie.carbook.feedstockservice.repositories.FeedstockRepository;
-import pl.emgie.carbook.feedstockservice.services.mapping.FeedstocksPricesAndDateDto;
+import pl.emgie.carbook.feedstockservice.services.mapping.FeedstockDto;
+import pl.emgie.carbook.feedstockservice.utils.FeedstockType;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class FeedstockServiceImpl implements FeedstockService {
@@ -21,43 +25,58 @@ public class FeedstockServiceImpl implements FeedstockService {
     }
 
     @Override
+    @Transactional
     public FeedstockEntity saveOrUpdate(FeedstockEntity entity) {
-        return null;
+        FeedstockEntity fromDb = repository.findFeedstockByDateAndType(entity.getType(), LocalDateTime.now());
+        if (fromDb == null) {
+            return repository.save(entity);
+        }
+        fromDb.setPrice(entity.getPrice());
+        repository.save(fromDb);
+        return fromDb;
     }
 
     @Override
-    public FeedstocksPricesAndDateDto findNewestData() {
+    @Transactional(readOnly = true)
+    public List<FeedstockDto> findNewestData() {
+
         List<FeedstockEntity> feedstocks = repository.findNewestFeedstocksEntity();
-
-        FeedstocksPricesAndDateDto feedstocksPricesAndDateDto = new FeedstocksPricesAndDateDto();
-        feedstocks.forEach(x -> getData(feedstocksPricesAndDateDto, x));
-
-        return feedstocksPricesAndDateDto;
+        List<FeedstockDto> dtos = feedstocks.stream().map(this::mapToDto).collect(Collectors.toList());
+        return dtos;
     }
 
-    private void getData(FeedstocksPricesAndDateDto feedstocksPricesAndDateDto, FeedstockEntity x) {
-        switch (x.getType()) {
-            case OIL:
-                feedstocksPricesAndDateDto.setOilPrice(x.getPrice());
-                feedstocksPricesAndDateDto.setOilLastUpdateDate(getDate(x));
-                break;
-            case GAS:
-                feedstocksPricesAndDateDto.setGasPrice(x.getPrice());
-                feedstocksPricesAndDateDto.setGasLastUpdateDate(getDate(x));
-                break;
-            case DIESEL:
-                feedstocksPricesAndDateDto.setDieselPrice(x.getPrice());
-                feedstocksPricesAndDateDto.setDieselLastUpdateDate(getDate(x));
-                break;
-            case PETROL:
-                feedstocksPricesAndDateDto.setPetrolPrice(x.getPrice());
-                feedstocksPricesAndDateDto.setGasLastUpdateDate(getDate(x));
-                break;
-        }
+    // TODO fix NPE
+    @Override
+    @Transactional(readOnly = true)
+    public FeedstockDto findFeedstockByDateAndType(FeedstockType type, LocalDate date) {
+        FeedstockEntity entity = repository.findFeedstockByDateAndType(type, date.atStartOfDay());
+        return mapToDto(entity);
+    }
+
+    // TODO fix NPE
+    @Override
+    public FeedstockDto findNewestFeedstockPriceByType(FeedstockType type) {
+        FeedstockEntity entity = repository.findNewestFeedstockByType(type);
+        return mapToDto(entity);
+    }
+
+    @Override
+    public List<FeedstockDto> findFeedstockByDate(LocalDate date) {
+        List<FeedstockEntity> feedstocks = repository.findFeedstockByDateForAllTypes(date.atStartOfDay());
+        List<FeedstockDto> dtos = feedstocks.stream().map(this::mapToDto).collect(Collectors.toList());
+        return dtos;
     }
 
     private LocalDateTime getDate(FeedstockEntity entity) {
         return Optional.ofNullable(entity.getUpdateDate()).orElse(entity.getCreateDate());
+    }
+
+    private FeedstockDto mapToDto(FeedstockEntity entity) {
+        FeedstockDto dto = new FeedstockDto();
+        dto.setLastUpdateDate(getDate(entity));
+        dto.setPrice(entity.getPrice());
+        dto.setType(entity.getType().getName());
+        return dto;
     }
 
 }
