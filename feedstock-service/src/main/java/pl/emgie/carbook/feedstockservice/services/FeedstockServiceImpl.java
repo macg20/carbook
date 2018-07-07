@@ -1,10 +1,10 @@
 package pl.emgie.carbook.feedstockservice.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.emgie.carbook.feedstockservice.domain.FeedstockEntity;
 import pl.emgie.carbook.feedstockservice.repositories.FeedstockRepository;
 import pl.emgie.carbook.feedstockservice.services.mapping.FeedstocksPricesAndDateDto;
-import pl.emgie.carbook.feedstockservice.utils.FeedstockType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,6 +15,11 @@ public class FeedstockServiceImpl implements FeedstockService {
 
     private FeedstockRepository repository;
 
+    @Autowired
+    public FeedstockServiceImpl(FeedstockRepository repository) {
+        this.repository = repository;
+    }
+
     @Override
     public FeedstockEntity saveOrUpdate(FeedstockEntity entity) {
         return null;
@@ -24,7 +29,6 @@ public class FeedstockServiceImpl implements FeedstockService {
     public FeedstocksPricesAndDateDto findNewestData() {
         List<FeedstockEntity> feedstocks = repository.findNewestFeedstocksEntity();
 
-        feedstocks.stream().filter(x -> (x.getType() == FeedstockType.OIL));
         FeedstocksPricesAndDateDto feedstocksPricesAndDateDto = new FeedstocksPricesAndDateDto();
         feedstocks.forEach(x -> getData(feedstocksPricesAndDateDto, x));
 
@@ -53,7 +57,7 @@ public class FeedstockServiceImpl implements FeedstockService {
     }
 
     private LocalDateTime getDate(FeedstockEntity entity) {
-        return Optional.ofNullable(entity.getUpdateDate()).orElseGet(() -> entity.getCreateDate());
+        return Optional.ofNullable(entity.getUpdateDate()).orElse(entity.getCreateDate());
     }
 
 }
