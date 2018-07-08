@@ -7,6 +7,7 @@ import pl.emgie.carbook.feedstockservice.domain.FeedstockEntity;
 import pl.emgie.carbook.feedstockservice.repositories.FeedstockRepository;
 import pl.emgie.carbook.feedstockservice.services.mapping.FeedstockDto;
 import pl.emgie.carbook.feedstockservice.utils.FeedstockType;
+import pl.emgie.commons.exceptions.ResourceNotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,32 +40,41 @@ public class FeedstockServiceImpl implements FeedstockService {
     @Override
     @Transactional(readOnly = true)
     public List<FeedstockDto> findNewestData() {
-
         List<FeedstockEntity> feedstocks = repository.findNewestFeedstocksEntity();
         List<FeedstockDto> dtos = feedstocks.stream().map(this::mapToDto).collect(Collectors.toList());
-        return dtos;
+        if (dtos != null && !dtos.isEmpty())
+            return dtos;
+        throw new ResourceNotFoundException("Resource not found");
     }
 
-    // TODO fix NPE
+
     @Override
     @Transactional(readOnly = true)
     public FeedstockDto findFeedstockByDateAndType(FeedstockType type, LocalDate date) {
         FeedstockEntity entity = repository.findFeedstockByDateAndType(type, date.atStartOfDay());
-        return mapToDto(entity);
+        if (entity != null)
+            return mapToDto(entity);
+        throw new ResourceNotFoundException("Resource not found");
     }
 
-    // TODO fix NPE
     @Override
+    @Transactional(readOnly = true)
     public FeedstockDto findNewestFeedstockPriceByType(FeedstockType type) {
         FeedstockEntity entity = repository.findNewestFeedstockByType(type);
-        return mapToDto(entity);
+        if (entity != null)
+            return mapToDto(entity);
+        throw new ResourceNotFoundException("Resource not found");
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<FeedstockDto> findFeedstockByDate(LocalDate date) {
         List<FeedstockEntity> feedstocks = repository.findFeedstockByDateForAllTypes(date.atStartOfDay());
         List<FeedstockDto> dtos = feedstocks.stream().map(this::mapToDto).collect(Collectors.toList());
-        return dtos;
+
+        if (dtos != null && !dtos.isEmpty())
+            return dtos;
+        throw new ResourceNotFoundException("Resource not found");
     }
 
     private LocalDateTime getDate(FeedstockEntity entity) {
