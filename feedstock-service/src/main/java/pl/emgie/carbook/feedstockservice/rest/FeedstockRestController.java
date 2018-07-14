@@ -9,9 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.emgie.carbook.feedstockservice.services.BaseService;
 import pl.emgie.carbook.feedstockservice.services.FeedstockService;
 import pl.emgie.carbook.feedstockservice.services.mapping.FeedstockDto;
-import pl.emgie.carbook.feedstockservice.services.mapping.FeedstocksPricesAndDateDto;
+import pl.emgie.carbook.feedstockservice.utils.FeedstockType;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/feedstock")
@@ -25,28 +26,26 @@ public class FeedstockRestController extends BaseService {
     }
 
     @GetMapping("/prices/")
-    public FeedstocksPricesAndDateDto getNewestFeedstocksPrices() {
-        getLogger().error("getNewestFeedstocksPrices");
-        FeedstocksPricesAndDateDto dto = feedstockService.findNewestData();
-        return dto;
+    public List<FeedstockDto> findNewestFeedstocksPrices() {
+        List<FeedstockDto> dtos = feedstockService.findNewestData();
+        return dtos;
     }
 
     @GetMapping("/prices/type/{type}/date/{date}")
-    public FeedstockDto getDataByTypeAndDate(@PathVariable("type") String type, @PathVariable("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        getLogger().error("getDataByTypeAndDate");
-//        FeedstocksPricesAndDateDto dto = feedstockService.findNewestData();
-        return new FeedstockDto();
+    public FeedstockDto findDataByTypeAndDate(@PathVariable("type") String type, @PathVariable("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        FeedstockDto dto = feedstockService.findFeedstockByDateAndType(FeedstockType.valueOf(type), date);
+        return dto;
     }
 
     @GetMapping("/prices/type/{type}")
-    public FeedstockDto getNewestFeedstockPriceByType(@PathVariable("type") String type) {
-        getLogger().error("getNewestFeedstockPrice");
-        return new FeedstockDto();
+    public FeedstockDto findNewestFeedstockPriceByType(@PathVariable("type") String type) {
+        FeedstockDto dto = feedstockService.findNewestFeedstockPriceByType(FeedstockType.valueOf(type));
+        return dto;
     }
 
     @GetMapping("/prices/date/{date}")
-    public FeedstocksPricesAndDateDto getNewestFeedstockPriceByDate(@PathVariable("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        getLogger().error("getNewestFeedstockPriceByDate");
-        return new FeedstocksPricesAndDateDto();
+    public List<FeedstockDto> findFeedstockPriceByDate(@PathVariable("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        List<FeedstockDto> dtos = feedstockService.findFeedstockByDate(date);
+        return dtos;
     }
 }

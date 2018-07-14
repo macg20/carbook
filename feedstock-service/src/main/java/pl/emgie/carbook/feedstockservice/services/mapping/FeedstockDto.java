@@ -7,6 +7,7 @@ public class FeedstockDto {
 
     private BigDecimal price;
     private LocalDateTime lastUpdateDate;
+    private String type;
 
     public BigDecimal getPrice() {
         return price;
@@ -22,5 +23,13 @@ public class FeedstockDto {
 
     public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

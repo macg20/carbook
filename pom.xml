@@ -29,6 +29,7 @@
         <module>feedstock-service</module>
         <module>discovery-service</module>
         <module>commons</module>
+        <module>carbook-service</module>
     </modules>
 
     <dependencies>

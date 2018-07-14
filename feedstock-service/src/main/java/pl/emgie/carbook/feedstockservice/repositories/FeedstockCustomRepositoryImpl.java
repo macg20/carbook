@@ -34,7 +34,8 @@ public class FeedstockCustomRepositoryImpl implements FeedstockCustomRepository 
         predicates.add(endDate);
         predicates.add(feedstockType);
         criteriaQuery.select(root).where(predicates.toArray(new Predicate[]{}));
-        return (FeedstockEntity) entityManager.createQuery(criteriaQuery).setMaxResults(1).getSingleResult();
+
+        return (FeedstockEntity) entityManager.createQuery(criteriaQuery).getResultList().stream().findFirst().orElse(null);
     }
 
     @Override
@@ -52,7 +53,6 @@ public class FeedstockCustomRepositoryImpl implements FeedstockCustomRepository 
 
         criteriaQuery.select(root).where(predicates.toArray(new Predicate[]{}));
 
-
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
@@ -66,12 +66,11 @@ public class FeedstockCustomRepositoryImpl implements FeedstockCustomRepository 
         Subquery subquery = criteriaQuery.subquery(FeedstockEntity.class);
         Root<FeedstockEntity> subRoot = subquery.from(FeedstockEntity.class);
         subquery.select(criteriaBuilder.greatest(subRoot.get((FeedstockEntity_.createDate))));
-        subquery.where(criteriaBuilder.equal(subRoot.get(FeedstockEntity_.type),type));
+        subquery.where(criteriaBuilder.equal(subRoot.get(FeedstockEntity_.type), type));
 
-        criteriaQuery.where(root.get(FeedstockEntity_.createDate).in(subquery), criteriaBuilder.equal(root.get(FeedstockEntity_.type),type));
+        criteriaQuery.where(root.get(FeedstockEntity_.createDate).in(subquery), criteriaBuilder.equal(root.get(FeedstockEntity_.type), type));
 
-
-        return (FeedstockEntity) entityManager.createQuery(criteriaQuery).setMaxResults(1).getSingleResult();
+        return (FeedstockEntity) entityManager.createQuery(criteriaQuery).getResultList().stream().findFirst().orElse(null);
     }
 
     @Override
@@ -90,6 +89,5 @@ public class FeedstockCustomRepositoryImpl implements FeedstockCustomRepository 
 
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
-
 
 }
